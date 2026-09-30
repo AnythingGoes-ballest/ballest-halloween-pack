@@ -260,8 +260,9 @@ cone cloth r=2.2 top=0.2 h=8 at=-3.3,0,30.5 rot=-45,0,0
 cylinder band r=12.9 h=3.2 at=0,0,1.5
 box buckle size=0.8,5,4.4 at=12.9,0,3.1
 """,
-    "jackolantern_hat.txt": """# A little jack-o'-lantern (KayKit, Kay Lousberg, CC0, recoloured orange) sitting on the ball.
-mesh jackolantern_orange.glb size=30
+    "jackolantern_hat.txt": """# A little jack-o'-lantern (KayKit, Kay Lousberg, CC0, recoloured orange) sitting on the ball, turned round so its
+# face looks back at the camera behind the ball.
+mesh jackolantern_orange.glb size=30 rot=0,180,0
 """,
     "devil_horns.txt": """# Devil horns built from shapes: two red horns curving out and up.
 material horn plastic #d01820 rough=0.3
@@ -515,7 +516,7 @@ def previews():
         for name in ("spider_web", "mummy", "candy_corn"):
             draw([], PREVIEWS / f"{name}.png", ball=texture(f"{name}.png"), azimuth=0, elevation=10, extent=52)
         draw(tris("witch_hat.txt"), PREVIEWS / "witch_hat.png", azimuth=20, elevation=18, extent=30, centre_z=14)
-        draw(tris("jackolantern_hat.txt"), PREVIEWS / "jackolantern_hat.png", azimuth=5, elevation=12, extent=20, centre_z=12)
+        draw(tris("jackolantern_hat.txt"), PREVIEWS / "jackolantern_hat.png", azimuth=185, elevation=12, extent=20, centre_z=12)
         draw(tris("devil_horns.txt"), PREVIEWS / "devil_horns.png", azimuth=10, elevation=10, extent=22, centre_z=5)
         draw(tris("bat_hat.txt"), PREVIEWS / "bat_hat.png", azimuth=5, elevation=10, extent=22, centre_z=16)
         draw(tris("skull_candle_hat.txt"), PREVIEWS / "skull_candle_hat.png", azimuth=20, elevation=12, extent=20, centre_z=14)

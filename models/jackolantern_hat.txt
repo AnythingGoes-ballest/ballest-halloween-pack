@@ -1,2 +1,3 @@
-# A little jack-o'-lantern (KayKit, Kay Lousberg, CC0, recoloured orange) sitting on the ball.
-mesh jackolantern_orange.glb size=30
+# A little jack-o'-lantern (KayKit, Kay Lousberg, CC0, recoloured orange) sitting on the ball, turned round so its
+# face looks back at the camera behind the ball.
+mesh jackolantern_orange.glb size=30 rot=0,180,0
