@@ -1,7 +1,7 @@
-# A bat (Quaternius, CC0) flapping inside a clear ball with a dark purple lower half, flapping faster as the ball
-# speeds up. It stays upright and faces where the ball is going.
-material dusk glass #4a1a6a opacity=0.5
+# A bat (Quaternius, CC0, recoloured with glowing red eyes) flapping inside a clear ball with a dark purple lower half,
+# looking back at the camera, flapping faster as the ball speeds up.
+material dusk glass #5a1a8a opacity=0.55
 group shell
 bowl dusk r=49.5 wall=0.8
 group bat travel
-mesh bat.glb size=70 at=0,0,-24 anim=Flying rate=1 run=0.12
+mesh bat.glb size=74 at=0,0,-26 rot=0,180,0 anim=Flying rate=1 run=0.12

@@ -11,6 +11,7 @@ import colorsys
 import io
 import json
 import math
+import shutil
 import struct
 import subprocess
 import sys
@@ -77,6 +78,94 @@ def orange_jackolantern():
     write_glb(MODELS / "jackolantern_orange.glb", gltf, binary)
 
 
+def glow_face(path):
+    """The carved parts of the jack-o'-lantern (the dark colours of its texture: the eyes, nose and mouth) made a
+    primitive of their own with a glowing orange material, so the face is lit from inside."""
+    gltf, binary = read_glb(path)
+    prim = gltf["meshes"][0]["primitives"][0]
+    image = gltf["images"][0]
+    view = gltf["bufferViews"][image["bufferView"]]
+    start = view.get("byteOffset", 0)
+    tex = np.asarray(Image.open(io.BytesIO(bytes(binary[start:start + view["byteLength"]]))).convert("RGB"))
+
+    def read(i):
+        a = gltf["accessors"][i]
+        v = gltf["bufferViews"][a["bufferView"]]
+        off = v.get("byteOffset", 0) + a.get("byteOffset", 0)
+        dt = np.dtype({5123: "<u2", 5125: "<u4", 5126: "<f4"}[a["componentType"]])
+        n = {"SCALAR": 1, "VEC2": 2, "VEC3": 3}[a["type"]]
+        return np.frombuffer(bytes(binary[off:off + a["count"] * n * dt.itemsize]), dtype=dt).reshape(-1, n)
+
+    idx = read(prim["indices"]).reshape(-1, 3)
+    uv = read(prim["attributes"]["TEXCOORD_0"])
+    h, w = tex.shape[:2]
+    centre = uv[idx].mean(1)
+    texel = tex[np.clip((centre[:, 1] * h).astype(int), 0, h - 1), np.clip((centre[:, 0] * w).astype(int), 0, w - 1)]
+    dark = texel.max(1) < 75
+    print(f"jack-o'-lantern: {int(dark.sum())} of {len(dark)} triangles are the glowing face")
+
+    def add(indices):
+        raw = indices.astype("<u4").tobytes()
+        at = len(binary)
+        binary.extend(raw + b"\0" * (-len(raw) % 4))
+        gltf["bufferViews"].append({"buffer": 0, "byteOffset": at, "byteLength": len(raw), "target": 34963})
+        gltf["accessors"].append({"bufferView": len(gltf["bufferViews"]) - 1, "componentType": 5125, "count": int(indices.size),
+                                  "type": "SCALAR"})
+        return len(gltf["accessors"]) - 1
+
+    gltf["materials"].append({"name": "carved_glow", "pbrMetallicRoughness": {"baseColorFactor": [1, 0.6, 0.1, 1], "metallicFactor": 0,
+                                                                              "roughnessFactor": 1},
+                               "emissiveFactor": [1.0, 0.5, 0.06],
+                               "extensions": {"KHR_materials_emissive_strength": {"emissiveStrength": 1.6}}})
+    gltf.setdefault("extensionsUsed", []).append("KHR_materials_emissive_strength")
+    lit = {"attributes": prim["attributes"], "indices": add(idx[dark]), "material": len(gltf["materials"]) - 1}
+    skin = dict(prim)
+    skin["indices"] = add(idx[~dark])
+    gltf["meshes"][0]["primitives"] = [skin, lit]
+    gltf["buffers"][0]["byteLength"] = len(binary)
+    write_glb(path, gltf, binary)
+
+
+def set_material(gltf, name, base=None, emissive=None, strength=1.0, rough=None):
+    """Changes the colours of every material called `name`: a plain colour, or a glowing one (the host draws a material
+    with an emissive colour and no texture as glowing, at 5 x the strongest channel x `strength`)."""
+    found = False
+    for m in gltf["materials"]:
+        if m.get("name") != name:
+            continue
+        found = True
+        pbr = m.setdefault("pbrMetallicRoughness", {})
+        pbr.pop("baseColorTexture", None)
+        pbr["metallicFactor"] = 0
+        if base:
+            pbr["baseColorFactor"] = list(base)
+        if rough is not None:
+            pbr["roughnessFactor"] = rough
+        if emissive:
+            m["emissiveFactor"] = list(emissive)
+            m["extensions"] = {"KHR_materials_emissive_strength": {"emissiveStrength": strength}}
+            if "KHR_materials_emissive_strength" not in gltf.setdefault("extensionsUsed", []):
+                gltf["extensionsUsed"].append("KHR_materials_emissive_strength")
+    assert found, name
+
+
+def lit_creatures():
+    """Quaternius' ghost, ghost skull and bat are dark purple and black models that came out as silhouettes in the
+    game's light. The ghost glows pale blue, the ghost skull glows green over a bone skull, and the bat is purple with
+    glowing red eyes."""
+    for name, edits in {
+        "ghost": [("Ghost_Main", dict(base=(0.75, 0.85, 1.0, 1), emissive=(0.62, 0.8, 1.0), strength=0.9))],
+        "ghost_skull": [("Ghost_Main", dict(base=(0.3, 1.0, 0.55, 1), emissive=(0.25, 1.0, 0.5), strength=0.9)),
+                        ("Ghost_Secondary", dict(base=(0.85, 0.78, 0.62, 1), rough=0.6))],
+        "bat": [("Main", dict(base=(0.2, 0.07, 0.34, 1), rough=0.6)), ("Black", dict(base=(0.12, 0.04, 0.2, 1), rough=0.6)),
+                ("Eyes", dict(base=(1, 0.1, 0.05, 1), emissive=(1.0, 0.12, 0.05), strength=1.6))],
+    }.items():
+        gltf, binary = read_glb(HERE / "sources" / f"{name}.glb")
+        for material, kw in edits:
+            set_material(gltf, material, **kw)
+        write_glb(MODELS / f"{name}.glb", gltf, binary)
+
+
 # --- ball textures ------------------------------------------------------------------------------------------------------
 # A ball texture wraps the ball: u (left to right) goes once around, v (top to bottom) from pole to pole. The ball's
 # front (+x, the way it faces) is the texture's middle.
@@ -101,8 +190,8 @@ def smooth(d, width):
 def spider_web():
     """Two webs, front and back, white threads on a dark purple ball: twelve spokes and sagging rings between them."""
     p, _, _ = directions()
-    col = np.zeros(p.shape) + np.array([0.07, 0.03, 0.10])
-    col += (p[..., 2:3] + 1) * 0.02                                 # a little lighter on top
+    col = np.zeros(p.shape) + np.array([0.20, 0.07, 0.28])
+    col += (p[..., 2:3] + 1) * 0.04                                 # a little lighter on top
     web = np.zeros(p.shape[:2])
     for axis in (np.array([1.0, 0, 0]), np.array([-1.0, 0, 0])):
         up = np.array([0, 0, 1.0])
@@ -113,12 +202,12 @@ def spider_web():
         spokes = 12
         step = 2 * math.pi / spokes
         a = (phi + step / 2) % step - step / 2                     # angle from the nearest spoke
-        web = np.maximum(web, smooth(np.abs(np.sin(a)) * np.sin(theta), 0.006) * near)
+        web = np.maximum(web, smooth(np.abs(np.sin(a)) * np.sin(theta), 0.010) * near)
         # rings: straight between spokes (a polygon), sagging toward the middle a little
         for k in range(1, 9):
             ring = 0.16 * k
             r = ring * (math.cos(step / 2) / np.cos(a)) * (1 - 0.06 * np.cos(a * spokes / 2) ** 2)
-            web = np.maximum(web, smooth(np.abs(theta - r) * 1.0, 0.007) * near * (theta > 0.05))
+            web = np.maximum(web, smooth(np.abs(theta - r) * 1.0, 0.011) * near * (theta > 0.05))
     col = col * (1 - web[..., None]) + np.array([0.92, 0.92, 0.96]) * web[..., None]
     save(col, "spider_web.png")
 
@@ -183,6 +272,32 @@ def candle_flames(size, turned=False):
     return lines
 
 
+def spider_lines():
+    """Two spiders on the ball, one at the front (+x) and one at the back: shapes only. Each sits on the surface with
+    its legs lying along it: eight legs, four to a side, each two capsules (a rising upper part, a lower part reaching
+    down to the surface). A capsule stands along z, so turning it by `roll` about x lays it along (0, cos, sin)."""
+    lines = ["material spider plastic #14101a rough=0.35", "material eyes glow #ff2010 bright=8"]
+    for sign, scale in ((1, 1.0), (-1, 0.65)):
+        r = lambda v: v * scale
+        base = 50 + r(3.5)
+        lines.append(f"sphere spider r={r(5.5):.1f} at={sign * base:.1f},0,0 scale=0.85,1,0.95")
+        lines.append(f"sphere spider r={r(8):.1f} at={sign * (base + r(1)):.1f},{r(-11):.1f},0 scale=0.85,1.15,0.95")
+        for side in (-1, 1):
+            lines.append(f"sphere eyes r={r(1.1):.1f} at={sign * (base + r(3.2)):.1f},{r(2.6) * side:.1f},{r(1.6):.1f}")
+        for side in (-1, 1):
+            for k, theta in enumerate((-50, -18, 16, 48)):
+                d = (math.cos(math.radians(theta)) * side, math.sin(math.radians(theta)))
+                # direction in the y-z plane, and the roll that lays a z-capsule along it
+                ang = math.degrees(math.atan2(d[1], d[0]))            # from +y toward +z
+                rot = ang - 90
+                x1, x2 = sign * (base + r(2.5)), sign * (base - r(0.4))
+                a1 = (r(4.5) * d[0], r(4.5) * d[1])
+                a2 = (a1[0] + r(9) * d[0], a1[1] + r(9) * d[1])
+                lines.append(f"capsule spider r={r(0.75):.2f} len={r(8):.1f} at={x1:.1f},{a1[0]:.1f},{a1[1]:.1f} rot=0,0,{rot:.1f}")
+                lines.append(f"capsule spider r={r(0.6):.2f} len={r(8):.1f} at={x2:.1f},{a2[0]:.1f},{a2[1]:.1f} rot=0,0,{rot:.1f}")
+    return lines
+
+
 MODEL_TEXT = {
     "pumpkin_ball.txt": """# The ball as a jack-o'-lantern: KayKit's (Kay Lousberg, CC0), recoloured orange by make_pack.py, stretched a little
 # upright so its body is as round as the ball and a little bigger (106 cm across), rolling with it. The ball itself is
@@ -193,61 +308,92 @@ mesh jackolantern_orange.glb size=106 scale=1.07,1,1.3 at=0,0,-51
 # is clear glass, so where it shows through, the skull is seen through it.
 mesh skull.glb size=106 at=0,0,-51
 """,
-    "ghost_ball.txt": """# A ghost (Quaternius, CC0) floating inside a clear ball with a misty purple lower half. It stays upright, faces
-# where the ball is going and flies faster as the ball speeds up; still, it hovers.
-material mist glass #b58cff opacity=0.35
+    "ghost_ball.txt": """# A ghost (Quaternius, CC0, recoloured to glow by make_pack.py) floating inside a clear ball with a misty purple lower
+# half, looking back at the camera. It hovers, and flies faster as the ball speeds up.
+material mist glass #b58cff opacity=0.42
 group shell
 bowl mist r=49.5 wall=0.8
 group ghost travel
-mesh ghost.glb size=72 at=0,0,-30 anim=Fast_Flying rate=0.8 run=0.08 idle=Flying_Idle
+mesh ghost.glb size=76 at=0,0,-32 rot=0,180,0 anim=Fast_Flying rate=0.8 run=0.08 idle=Flying_Idle
 """,
-    "bat_ball.txt": """# A bat (Quaternius, CC0) flapping inside a clear ball with a dark purple lower half, flapping faster as the ball
-# speeds up. It stays upright and faces where the ball is going.
-material dusk glass #4a1a6a opacity=0.5
+    "bat_ball.txt": """# A bat (Quaternius, CC0, recoloured with glowing red eyes) flapping inside a clear ball with a dark purple lower half,
+# looking back at the camera, flapping faster as the ball speeds up.
+material dusk glass #5a1a8a opacity=0.55
 group shell
 bowl dusk r=49.5 wall=0.8
 group bat travel
-mesh bat.glb size=70 at=0,0,-24 anim=Flying rate=1 run=0.12
+mesh bat.glb size=74 at=0,0,-26 rot=0,180,0 anim=Flying rate=1 run=0.12
 """,
-    "ghost_skull_ball.txt": """# A ghost skull (Quaternius, CC0) floating inside a clear ball with an eerie green lower half. It stays upright, faces
-# where the ball is going and flies faster as the ball speeds up; still, it hovers.
-material eerie glass #6cff9a opacity=0.3
+    "ghost_skull_ball.txt": """# A ghost skull (Quaternius, CC0, recoloured to glow green) floating inside a clear ball with an eerie green lower
+# half, looking back at the camera. It hovers, and flies faster as the ball speeds up.
+material eerie glass #4cff88 opacity=0.4
 group shell
 bowl eerie r=49.5 wall=0.8
 group skull travel
-mesh ghost_skull.glb size=72 at=0,0,-30 anim=Fast_Flying rate=0.8 run=0.08 idle=Flying_Idle
+mesh ghost_skull.glb size=76 at=0,0,-32 rot=0,180,0 anim=Fast_Flying rate=0.8 run=0.08 idle=Flying_Idle
 """,
-    "brew_ball.txt": """# A witch's brew: a clear ball half full of green potion that stays level as the ball rolls, its surface glowing,
-# and glowing bubbles rising and sinking in it.
-material brew glass #2cff3c opacity=0.55
-material surface glow #30ff48 bright=2
-material bubble glow #b4ff70 bright=6
-tempo rate=0.5
+    "brew_ball.txt": """# A witch's brew: a clear ball half full of glowing green potion that stays level as the ball rolls, with a swirl of
+# light turning on its surface, bubbles rising to pop, a skull and two eyeballs floating in it.
+material brew glass #2cff3c opacity=0.6
+material surface glow #30ff48 bright=3
+material foam glow #b8ff9c bright=5
+material eye plastic #f6f2e2 rough=0.25
+material iris plastic #3cc060 rough=0.2
+material pupil plastic #0a0a0a rough=0.1
+tempo rate=0.4
 group potion travel
 bowl brew r=49.5 wall=0.8
 disc surface r=49 hole=0 at=0,0,-0.5
-group b1 on=potion bob=14 phase=0
-sphere bubble r=3 at=14,6,-30
-group b2 on=potion bob=18 phase=90
-sphere bubble r=2.2 at=-10,12,-26
-group b3 on=potion bob=12 phase=200
-sphere bubble r=2.6 at=4,-16,-22
-group b4 on=potion bob=16 phase=300
-sphere bubble r=1.8 at=-18,-6,-28
-group b5 on=potion bob=10 phase=140
-sphere bubble r=2 at=22,-10,-18
+mesh bubbles.glb at=0,0,-32 anim=rise rate=0.8
+mesh bubbles.glb at=17,-11,-30 anim=rise rate=0.55
+mesh bubbles.glb at=-17,12,-31 anim=rise rate=0.65
+group swirl on=potion spin=z speed=22
+ring foam r=27 thick=1.7 degrees=210 at=0,0,0.2
+ring foam r=15 thick=1.4 degrees=170 at=0,0,0.2 rot=0,0,0
+group skullbob on=potion bob=2.2
+mesh skull.glb size=17 at=10,-14,-1 rot=0,200,0
+group eyebob1 on=potion bob=1.8 phase=110
+sphere eye r=5 at=-17,15,2
+sphere iris r=2.9 at=-21.4,15,2
+sphere pupil r=1.5 at=-23.4,15,2
+group eyebob2 on=potion bob=2 phase=240
+sphere eye r=4 at=-4,-24,1.5
+sphere iris r=2.3 at=-7.6,-24,1.5
+sphere pupil r=1.2 at=-9.2,-24,1.5
 """,
-    "graveyard_ball.txt": """# A snow-globe graveyard: a mound of dark earth with two graves and a dead tree with a lantern (KayKit, Kay
-# Lousberg, CC0) inside a clear ball, kept upright and turned the way the ball is going.
-material earth plastic #2c2a24 rough=0.95
-material grass plastic #3a4a2a rough=0.9
+    "graveyard_ball.txt": """# A snow-globe graveyard at night: a clear ball with a deep blue lower half, a moon and stars, a mound of earth with
+# two graves, a dead tree with a lantern (KayKit, Kay Lousberg, CC0), two little glowing jack-o'-lanterns, green mist
+# along the ground and a bat circling. Kept upright and turned the way the ball is going.
+material night glass #1c1478 opacity=0.55
+material earth plastic #3a2c22 rough=0.95
+material grass plastic #3d5a2a rough=0.9
+material moon glow #fff4b8 bright=4
+material star glow #ffffff bright=6
+material mist glass #7dffa0 opacity=0.18
+group shell
+bowl night r=49.5 wall=0.8
 group yard travel
-cylinder earth r=38 h=6 at=0,0,-34
-cylinder grass r=36 h=0.6 at=0,0,-28.2
-mesh gravestone.glb size=18 at=12,-14,-27.6 rot=0,-15,0
-mesh grave.glb size=17 at=10,12,-27.6 rot=0,10,0
-mesh dead_tree.glb size=48 at=-12,2,-27.6 rot=0,40,0
+cone earth r=22 top=44 h=24 at=0,0,-44
+cylinder grass r=44 h=0.8 at=0,0,-20.4
+disc mist r=43 hole=0 at=0,0,-19.2
+mesh gravestone.glb size=24 at=15,-17,-19.6 rot=0,-160,0
+mesh grave.glb size=23 at=17,15,-19.6 rot=0,-170,0
+mesh dead_tree.glb size=62 at=-13,3,-19.6 rot=0,40,0
+mesh jackolantern_orange.glb size=10 at=24,2,-19.6 rot=0,180,0
+mesh jackolantern_orange.glb size=8 at=-24,-17,-19.6 rot=0,150,0
+sphere moon r=6.5 at=26,10,31
+sphere star r=0.7 at=-10,-22,38
+sphere star r=0.7 at=12,-30,30
+sphere star r=0.6 at=-28,10,36
+sphere star r=0.7 at=6,26,40
+sphere star r=0.6 at=-4,-6,44
+sphere star r=0.6 at=32,-14,22
+group orbit on=yard spin=z speed=55
+mesh bat.glb size=14 at=30,0,24 rot=0,90,0 anim=Flying rate=1
 """,
+    "spider_ball.txt": """# Two spiders on the spider web ball, a big one at the front and a smaller one at the back, made from shapes: a black
+# body and abdomen, glowing red eyes and eight legs in two bent segments. They roll with the ball.
+""" + "\n".join(spider_lines()) + "\n",
 }
 
 HAT_TEXT = {
@@ -319,6 +465,8 @@ def load_obj(path):
                     cur = materials.setdefault(q[1], {"Kd": (0.8, 0.8, 0.8), "tex": None})
                 elif q and q[0] == "Kd":
                     cur["Kd"] = tuple(float(x) for x in q[1:4])
+                elif q and q[0] == "Ke":
+                    cur["Ke"] = tuple(float(x) for x in q[1:4])
                 elif q and q[0] == "map_Kd":
                     cur["tex"] = np.asarray(Image.open(ml.split(None, 1)[1].strip()).convert("RGB"), float) / 255
         elif p[0] == "v":
@@ -362,7 +510,11 @@ def mesh_tris(line, work):
             colour = tex[min(int(w % 1 * tex.shape[0]), tex.shape[0] - 1), min(int(u % 1 * tex.shape[1]), tex.shape[1] - 1)] ** 2.2
         else:
             colour = np.array(m["Kd"])
-        out.append((p[idx], colour, "plastic", 1.0))
+        ke = np.array(m.get("Ke", (0, 0, 0)))
+        if ke.max() > 0.01:                             # a glowing part is drawn at full brightness in its colour
+            out.append((p[idx], ke / ke.max(), "glow", 1.0))
+        else:
+            out.append((p[idx], colour, "plastic", 1.0))
     return out
 
 
@@ -511,12 +663,13 @@ def previews():
         tris = lambda f: model_tris((MODELS / f).read_text(), work)
         draw(tris("pumpkin_ball.txt"), PREVIEWS / "pumpkin.png", ball=None, azimuth=10, elevation=10, extent=62)
         draw(tris("skull_ball.txt"), PREVIEWS / "skull.png", ball=None, azimuth=15, elevation=8, extent=60)
-        draw(tris("ghost_ball.txt"), PREVIEWS / "ghost.png", ball="glass", azimuth=15)
-        draw(tris("bat_ball.txt"), PREVIEWS / "bat.png", ball="glass", azimuth=10)
-        draw(tris("ghost_skull_ball.txt"), PREVIEWS / "ghost_skull.png", ball="glass", azimuth=15)
+        draw(tris("ghost_ball.txt"), PREVIEWS / "ghost.png", ball="glass", azimuth=195)
+        draw(tris("bat_ball.txt"), PREVIEWS / "bat.png", ball="glass", azimuth=190)
+        draw(tris("ghost_skull_ball.txt"), PREVIEWS / "ghost_skull.png", ball="glass", azimuth=195)
         draw(tris("brew_ball.txt"), PREVIEWS / "brew.png", ball="glass", azimuth=20, elevation=22)
         draw(tris("graveyard_ball.txt"), PREVIEWS / "graveyard.png", ball="glass", azimuth=200, elevation=18)
-        for name in ("spider_web", "mummy", "candy_corn"):
+        draw(tris("spider_ball.txt"), PREVIEWS / "spider_web.png", ball=texture("spider_web.png"), azimuth=0, elevation=10, extent=56)
+        for name in ("mummy", "candy_corn"):
             draw([], PREVIEWS / f"{name}.png", ball=texture(f"{name}.png"), azimuth=0, elevation=10, extent=52)
         draw(tris("witch_hat.txt"), PREVIEWS / "witch_hat.png", azimuth=20, elevation=18, extent=30, centre_z=14)
         draw(tris("jackolantern_hat.txt"), PREVIEWS / "jackolantern_hat.png", azimuth=185, elevation=12, extent=20, centre_z=12)
@@ -530,6 +683,9 @@ if __name__ == "__main__":
     for d in (TEXTURES, PREVIEWS):
         d.mkdir(exist_ok=True)
     orange_jackolantern()
+    glow_face(MODELS / "jackolantern_orange.glb")
+    lit_creatures()
+    shutil.copy(HERE / "sources" / "bubbles.glb", MODELS / "bubbles.glb")
     spider_web()
     mummy()
     candy_corn()

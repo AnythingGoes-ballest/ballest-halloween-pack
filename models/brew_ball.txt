@@ -1,19 +1,28 @@
-# A witch's brew: a clear ball half full of green potion that stays level as the ball rolls, its surface glowing,
-# and glowing bubbles rising and sinking in it.
-material brew glass #2cff3c opacity=0.55
-material surface glow #30ff48 bright=2
-material bubble glow #b4ff70 bright=6
-tempo rate=0.5
+# A witch's brew: a clear ball half full of glowing green potion that stays level as the ball rolls, with a swirl of
+# light turning on its surface, bubbles rising to pop, a skull and two eyeballs floating in it.
+material brew glass #2cff3c opacity=0.6
+material surface glow #30ff48 bright=3
+material foam glow #b8ff9c bright=5
+material eye plastic #f6f2e2 rough=0.25
+material iris plastic #3cc060 rough=0.2
+material pupil plastic #0a0a0a rough=0.1
+tempo rate=0.4
 group potion travel
 bowl brew r=49.5 wall=0.8
 disc surface r=49 hole=0 at=0,0,-0.5
-group b1 on=potion bob=14 phase=0
-sphere bubble r=3 at=14,6,-30
-group b2 on=potion bob=18 phase=90
-sphere bubble r=2.2 at=-10,12,-26
-group b3 on=potion bob=12 phase=200
-sphere bubble r=2.6 at=4,-16,-22
-group b4 on=potion bob=16 phase=300
-sphere bubble r=1.8 at=-18,-6,-28
-group b5 on=potion bob=10 phase=140
-sphere bubble r=2 at=22,-10,-18
+mesh bubbles.glb at=0,0,-32 anim=rise rate=0.8
+mesh bubbles.glb at=17,-11,-30 anim=rise rate=0.55
+mesh bubbles.glb at=-17,12,-31 anim=rise rate=0.65
+group swirl on=potion spin=z speed=22
+ring foam r=27 thick=1.7 degrees=210 at=0,0,0.2
+ring foam r=15 thick=1.4 degrees=170 at=0,0,0.2 rot=0,0,0
+group skullbob on=potion bob=2.2
+mesh skull.glb size=17 at=10,-14,-1 rot=0,200,0
+group eyebob1 on=potion bob=1.8 phase=110
+sphere eye r=5 at=-17,15,2
+sphere iris r=2.9 at=-21.4,15,2
+sphere pupil r=1.5 at=-23.4,15,2
+group eyebob2 on=potion bob=2 phase=240
+sphere eye r=4 at=-4,-24,1.5
+sphere iris r=2.3 at=-7.6,-24,1.5
+sphere pupil r=1.2 at=-9.2,-24,1.5

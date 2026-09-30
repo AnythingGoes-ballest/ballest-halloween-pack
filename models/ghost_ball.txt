@@ -1,7 +1,7 @@
-# A ghost (Quaternius, CC0) floating inside a clear ball with a misty purple lower half. It stays upright, faces
-# where the ball is going and flies faster as the ball speeds up; still, it hovers.
-material mist glass #b58cff opacity=0.35
+# A ghost (Quaternius, CC0, recoloured to glow by make_pack.py) floating inside a clear ball with a misty purple lower
+# half, looking back at the camera. It hovers, and flies faster as the ball speeds up.
+material mist glass #b58cff opacity=0.42
 group shell
 bowl mist r=49.5 wall=0.8
 group ghost travel
-mesh ghost.glb size=72 at=0,0,-30 anim=Fast_Flying rate=0.8 run=0.08 idle=Flying_Idle
+mesh ghost.glb size=76 at=0,0,-32 rot=0,180,0 anim=Fast_Flying rate=0.8 run=0.08 idle=Flying_Idle

@@ -1,10 +1,29 @@
-# A snow-globe graveyard: a mound of dark earth with two graves and a dead tree with a lantern (KayKit, Kay
-# Lousberg, CC0) inside a clear ball, kept upright and turned the way the ball is going.
-material earth plastic #2c2a24 rough=0.95
-material grass plastic #3a4a2a rough=0.9
+# A snow-globe graveyard at night: a clear ball with a deep blue lower half, a moon and stars, a mound of earth with
+# two graves, a dead tree with a lantern (KayKit, Kay Lousberg, CC0), two little glowing jack-o'-lanterns, green mist
+# along the ground and a bat circling. Kept upright and turned the way the ball is going.
+material night glass #1c1478 opacity=0.55
+material earth plastic #3a2c22 rough=0.95
+material grass plastic #3d5a2a rough=0.9
+material moon glow #fff4b8 bright=4
+material star glow #ffffff bright=6
+material mist glass #7dffa0 opacity=0.18
+group shell
+bowl night r=49.5 wall=0.8
 group yard travel
-cylinder earth r=38 h=6 at=0,0,-34
-cylinder grass r=36 h=0.6 at=0,0,-28.2
-mesh gravestone.glb size=18 at=12,-14,-27.6 rot=0,-15,0
-mesh grave.glb size=17 at=10,12,-27.6 rot=0,10,0
-mesh dead_tree.glb size=48 at=-12,2,-27.6 rot=0,40,0
+cone earth r=22 top=44 h=24 at=0,0,-44
+cylinder grass r=44 h=0.8 at=0,0,-20.4
+disc mist r=43 hole=0 at=0,0,-19.2
+mesh gravestone.glb size=24 at=15,-17,-19.6 rot=0,-160,0
+mesh grave.glb size=23 at=17,15,-19.6 rot=0,-170,0
+mesh dead_tree.glb size=62 at=-13,3,-19.6 rot=0,40,0
+mesh jackolantern_orange.glb size=10 at=24,2,-19.6 rot=0,180,0
+mesh jackolantern_orange.glb size=8 at=-24,-17,-19.6 rot=0,150,0
+sphere moon r=6.5 at=26,10,31
+sphere star r=0.7 at=-10,-22,38
+sphere star r=0.7 at=12,-30,30
+sphere star r=0.6 at=-28,10,36
+sphere star r=0.7 at=6,26,40
+sphere star r=0.6 at=-4,-6,44
+sphere star r=0.6 at=32,-14,22
+group orbit on=yard spin=z speed=55
+mesh bat.glb size=14 at=30,0,24 rot=0,90,0 anim=Flying rate=1
