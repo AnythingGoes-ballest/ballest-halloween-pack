@@ -312,28 +312,28 @@ mesh jackolantern_orange.glb size=106 scale=1.07,1,1.3 at=0,0,-51 rot=0,180,0
 mesh skull.glb size=106 at=0,0,-51 rot=0,180,0
 """,
     "ghost_ball.txt": """# A ghost (Quaternius, CC0, recoloured to glow by make_pack.py) floating inside a clear ball with a misty purple lower
-# half, looking back at the camera. It hovers, and flies faster as the ball speeds up.
+# half, facing where the ball is going. It hovers, and flies faster as the ball speeds up.
 material mist glass #b58cff opacity=0.42
 group shell
 bowl mist r=49.5 wall=0.8
 group ghost travel
-mesh ghost.glb size=76 at=0,0,-32 rot=0,180,0 anim=Fast_Flying rate=0.8 run=0.08 idle=Flying_Idle
+mesh ghost.glb size=76 at=0,0,-32 anim=Fast_Flying rate=0.8 run=0.08 idle=Flying_Idle
 """,
     "bat_ball.txt": """# A bat (Quaternius, CC0, recoloured with glowing red eyes) flapping inside a clear ball with a dark purple lower half,
-# looking back at the camera, flapping faster as the ball speeds up.
+# facing where the ball is going, flapping faster as the ball speeds up.
 material dusk glass #5a1a8a opacity=0.55
 group shell
 bowl dusk r=49.5 wall=0.8
 group bat travel
-mesh bat.glb size=74 at=0,0,-26 rot=0,180,0 anim=Flying rate=1 run=0.12
+mesh bat.glb size=74 at=0,0,-26 anim=Flying rate=1 run=0.12
 """,
     "ghost_skull_ball.txt": """# A ghost skull (Quaternius, CC0, recoloured to glow green) floating inside a clear ball with an eerie green lower
-# half, looking back at the camera. It hovers, and flies faster as the ball speeds up.
+# half, facing where the ball is going. It hovers, and flies faster as the ball speeds up.
 material eerie glass #4cff88 opacity=0.4
 group shell
 bowl eerie r=49.5 wall=0.8
 group skull travel
-mesh ghost_skull.glb size=76 at=0,0,-32 rot=0,180,0 anim=Fast_Flying rate=0.8 run=0.08 idle=Flying_Idle
+mesh ghost_skull.glb size=76 at=0,0,-32 anim=Fast_Flying rate=0.8 run=0.08 idle=Flying_Idle
 """,
     "brew_ball.txt": """# A witch's brew: a clear ball half full of glowing green potion that stays level as the ball rolls, with a swirl of
 # light turning on its surface, bubbles rising to pop, a skull and two eyeballs floating in it.
