@@ -1,0 +1,2 @@
+# The ball as a skull: KayKit's (Kay Lousberg, CC0), as big as the ball and rolling with it. The ball under it is bone.
+mesh skull.glb size=102 at=0,0,-50

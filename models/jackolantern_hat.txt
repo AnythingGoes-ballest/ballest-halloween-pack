@@ -1,0 +1,2 @@
+# A little jack-o'-lantern (KayKit, Kay Lousberg, CC0, recoloured orange) sitting on the ball.
+mesh jackolantern_orange.glb size=30

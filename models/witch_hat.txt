@@ -1,0 +1,10 @@
+# A witch's hat built from shapes: a wide brim, a tall cone bent back at its tip, a purple band and a gold buckle.
+material cloth plastic #221230 rough=0.85
+material band plastic #7a2cc8 rough=0.5
+material buckle metal #e0b848 rough=0.3
+cylinder cloth r=25 h=1.4
+cone cloth r=12.5 top=5 h=22 at=0,0,1.4
+cone cloth r=5 top=2.2 h=8 at=-0.8,0,23 rot=-20,0,0
+cone cloth r=2.2 top=0.2 h=8 at=-3.3,0,30.5 rot=-45,0,0
+cylinder band r=12.9 h=3.2 at=0,0,1.5
+box buckle size=0.8,5,4.4 at=12.9,0,3.1

@@ -1,0 +1,8 @@
+# Devil horns built from shapes: two red horns curving out and up.
+material horn plastic #d01820 rough=0.3
+cone horn r=4.2 top=3 h=8 at=2,-9,-2 rot=0,0,-20
+cone horn r=3 top=1.6 h=7 at=2,-11.7,5.5 rot=0,0,-38
+cone horn r=1.6 top=0.2 h=6 at=2,-15.9,11 rot=0,0,-60
+cone horn r=4.2 top=3 h=8 at=2,9,-2 rot=0,0,20
+cone horn r=3 top=1.6 h=7 at=2,11.7,5.5 rot=0,0,38
+cone horn r=1.6 top=0.2 h=6 at=2,15.9,11 rot=0,0,60

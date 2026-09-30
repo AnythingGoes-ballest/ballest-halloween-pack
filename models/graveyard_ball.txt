@@ -1,0 +1,10 @@
+# A snow-globe graveyard: a mound of dark earth with two graves and a dead tree with a lantern (KayKit, Kay
+# Lousberg, CC0) inside a clear ball, kept upright and turned the way the ball is going.
+material earth plastic #2c2a24 rough=0.95
+material grass plastic #3a4a2a rough=0.9
+group yard travel
+cylinder earth r=38 h=6 at=0,0,-34
+cylinder grass r=36 h=0.6 at=0,0,-28.2
+mesh gravestone.glb size=18 at=12,-14,-27.6 rot=0,-15,0
+mesh grave.glb size=17 at=10,12,-27.6 rot=0,10,0
+mesh dead_tree.glb size=48 at=-12,2,-27.6 rot=0,40,0

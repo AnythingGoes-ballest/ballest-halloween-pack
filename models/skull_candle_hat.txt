@@ -1,0 +1,6 @@
+# A skull with three lit candles on it (KayKit, Kay Lousberg, CC0), with glowing flames on the wicks.
+material flame glow #ffb840 bright=12
+mesh skull_candle.glb size=30
+sphere flame r=0.9 at=-4.6,-2.6,30.9 scale=1,1,1.7
+sphere flame r=0.9 at=0.6,2.0,27.2 scale=1,1,1.7
+sphere flame r=0.9 at=1.0,-3.6,25.8 scale=1,1,1.7

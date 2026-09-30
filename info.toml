@@ -1,0 +1,11 @@
+[meta]
+name = "Halloween Pack"
+version = "0.1.0"
+author = "AnythingGoes"
+description = "Ten Halloween balls (pumpkin, skull, ghost, bat, ghost skull, witch's brew, graveyard globe, spider web, mummy, candy corn) and five hats (witch hat, jack-o'-lantern, devil horns, bat, skull candle)."
+min_host = "0.17.1"
+dependencies = ["cosmetic-kit"]
+
+[script]
+files = ["main.as"]
+assets = ["previews/*.png", "textures/*.png", "models/*.txt", "models/*.glb"]
