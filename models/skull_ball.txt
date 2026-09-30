@@ -1,3 +1,3 @@
 # The ball as a skull: KayKit's (Kay Lousberg, CC0), a little bigger than the ball and rolling with it. The ball itself
 # is clear glass, so where it shows through, the skull is seen through it.
-mesh skull.glb size=106 at=0,0,-51
+mesh skull.glb size=106 at=0,0,-51 rot=0,180,0

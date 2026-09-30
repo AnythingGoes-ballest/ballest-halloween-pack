@@ -167,8 +167,9 @@ def lit_creatures():
 
 
 # --- ball textures ------------------------------------------------------------------------------------------------------
-# A ball texture wraps the ball: u (left to right) goes once around, v (top to bottom) from pole to pole. The ball's
-# front (+x, the way it faces) is the texture's middle.
+# A ball texture wraps the ball: u (left to right) goes once around, v (top to bottom) from pole to pole. Measured on
+# the racing ball at the start (a test texture of four coloured quarters): the camera behind the ball looks at u = 0.25,
+# the side where a model's -x is. Textures are drawn about +x here and turned a quarter to put their front there.
 TW, TH = 1024, 512
 
 
@@ -209,6 +210,7 @@ def spider_web():
             r = ring * (math.cos(step / 2) / np.cos(a)) * (1 - 0.06 * np.cos(a * spokes / 2) ** 2)
             web = np.maximum(web, smooth(np.abs(theta - r) * 1.0, 0.011) * near * (theta > 0.05))
     col = col * (1 - web[..., None]) + np.array([0.92, 0.92, 0.96]) * web[..., None]
+    col = np.roll(col, -TW // 4, axis=1)                            # a web's middle where the camera looks (u = 0.25)
     save(col, "spider_web.png")
 
 
@@ -237,6 +239,7 @@ def mummy():
         col = np.where((ang < 0.11)[..., None], np.array([0.95, 0.93, 0.85]), col)
         pupil = np.array([math.cos(0.17) * math.cos(0.2 * side - 0.02), math.cos(0.17) * math.sin(0.2 * side - 0.02), math.sin(0.17)])
         col = np.where((np.arccos(np.clip(p @ pupil, -1, 1)) < 0.045)[..., None], np.array([0.05, 0.03, 0.02]), col)
+    col = np.roll(col, -TW // 4, axis=1)                            # the eyes where the camera looks (u = 0.25)
     save(col, "mummy.png")
 
 
@@ -268,7 +271,7 @@ def candle_flames(size, turned=False):
         p = (np.array(wick) - centre) * k
         if turned:                                  # turned round (yaw 180) about the centre of its bounds
             p[0], p[1] = -p[0], -p[1]
-        lines.append(f"sphere flame r=0.9 at={p[0]:.1f},{p[1]:.1f},{p[2] + 1.0:.1f} scale=1,1,1.7")
+        lines.append(f"sphere flame r={0.9 * size / 30:.2f} at={p[0]:.1f},{p[1]:.1f},{p[2] + 1.0:.1f} scale=1,1,1.7")
     return lines
 
 
@@ -277,7 +280,7 @@ def spider_lines():
     its legs lying along it: eight legs, four to a side, each two capsules (a rising upper part, a lower part reaching
     down to the surface). A capsule stands along z, so turning it by `roll` about x lays it along (0, cos, sin)."""
     lines = ["material spider plastic #14101a rough=0.35", "material eyes glow #ff2010 bright=8"]
-    for sign, scale in ((1, 1.0), (-1, 0.65)):
+    for sign, scale in ((-1, 1.0), (1, 0.65)):      # the big one on the camera side (-x)
         r = lambda v: v * scale
         base = 50 + r(3.5)
         lines.append(f"sphere spider r={r(5.5):.1f} at={sign * base:.1f},0,0 scale=0.85,1,0.95")
@@ -289,12 +292,12 @@ def spider_lines():
                 d = (math.cos(math.radians(theta)) * side, math.sin(math.radians(theta)))
                 # direction in the y-z plane, and the roll that lays a z-capsule along it
                 ang = math.degrees(math.atan2(d[1], d[0]))            # from +y toward +z
-                rot = ang - 90
+                rot = 90 - ang                                        # a roll turns +z to (0, sin, cos): measured from turn()
                 x1, x2 = sign * (base + r(2.5)), sign * (base - r(0.4))
                 a1 = (r(4.5) * d[0], r(4.5) * d[1])
-                a2 = (a1[0] + r(9) * d[0], a1[1] + r(9) * d[1])
-                lines.append(f"capsule spider r={r(0.75):.2f} len={r(8):.1f} at={x1:.1f},{a1[0]:.1f},{a1[1]:.1f} rot=0,0,{rot:.1f}")
-                lines.append(f"capsule spider r={r(0.6):.2f} len={r(8):.1f} at={x2:.1f},{a2[0]:.1f},{a2[1]:.1f} rot=0,0,{rot:.1f}")
+                a2 = (a1[0] + r(10) * d[0], a1[1] + r(10) * d[1])
+                lines.append(f"capsule spider r={r(1.0):.2f} len={r(9):.1f} at={x1:.1f},{a1[0]:.1f},{a1[1]:.1f} rot=0,0,{rot:.1f}")
+                lines.append(f"capsule spider r={r(0.8):.2f} len={r(9):.1f} at={x2:.1f},{a2[0]:.1f},{a2[1]:.1f} rot=0,0,{rot:.1f}")
     return lines
 
 
@@ -302,11 +305,11 @@ MODEL_TEXT = {
     "pumpkin_ball.txt": """# The ball as a jack-o'-lantern: KayKit's (Kay Lousberg, CC0), recoloured orange by make_pack.py, stretched a little
 # upright so its body is as round as the ball and a little bigger (106 cm across), rolling with it. The ball itself is
 # clear glass, so where it shows through the pumpkin's grooves the pumpkin is seen through it.
-mesh jackolantern_orange.glb size=106 scale=1.07,1,1.3 at=0,0,-51
+mesh jackolantern_orange.glb size=106 scale=1.07,1,1.3 at=0,0,-51 rot=0,180,0
 """,
     "skull_ball.txt": """# The ball as a skull: KayKit's (Kay Lousberg, CC0), a little bigger than the ball and rolling with it. The ball itself
 # is clear glass, so where it shows through, the skull is seen through it.
-mesh skull.glb size=106 at=0,0,-51
+mesh skull.glb size=106 at=0,0,-51 rot=0,180,0
 """,
     "ghost_ball.txt": """# A ghost (Quaternius, CC0, recoloured to glow by make_pack.py) floating inside a clear ball with a misty purple lower
 # half, looking back at the camera. It hovers, and flies faster as the ball speeds up.
@@ -410,7 +413,7 @@ box buckle size=0.8,5,4.4 at=12.9,0,3.1
 """,
     "jackolantern_hat.txt": """# A little jack-o'-lantern (KayKit, Kay Lousberg, CC0, recoloured orange) sitting on the ball, turned round so its
 # face looks back at the camera behind the ball.
-mesh jackolantern_orange.glb size=30 rot=0,180,0
+mesh jackolantern_orange.glb size=42 rot=0,180,0
 """,
     "devil_horns.txt": """# Devil horns built from shapes: two red horns curving out and up.
 material horn plastic #d01820 rough=0.3
@@ -422,13 +425,13 @@ cone horn r=3 top=1.6 h=7 at=2,11.7,5.5 rot=0,0,38
 cone horn r=1.6 top=0.2 h=6 at=2,15.9,11 rot=0,0,60
 """,
     "bat_hat.txt": """# A bat (Quaternius, CC0) hovering over the ball, flapping, turned round to look back at the camera behind the ball.
-mesh bat.glb size=34 at=0,0,6 rot=0,180,0 anim=Flying rate=1
+mesh bat.glb size=48 at=0,0,6 rot=0,180,0 anim=Flying rate=1
 """,
     "skull_candle_hat.txt": """# A skull with three lit candles on it (KayKit, Kay Lousberg, CC0), with glowing flames on the wicks, turned round
 # to look back at the camera behind the ball.
 material flame glow #ffb840 bright=12
-mesh skull_candle.glb size=30 rot=0,180,0
-""" + "\n".join(candle_flames(30, turned=True)) + "\n",
+mesh skull_candle.glb size=40 rot=0,180,0
+""" + "\n".join(candle_flames(40, turned=True)) + "\n",
 }
 
 
@@ -545,6 +548,29 @@ def shape_tris(words, mats):
         for i in range(seg):
             tris += [[a[i], a[(i + 1) % seg], b[i]], [b[i], a[(i + 1) % seg], b[(i + 1) % seg]]]
             tris += [[np.zeros(3), a[i], a[(i + 1) % seg]], [np.array([0, 0, h]), b[i], b[(i + 1) % seg]]]
+    elif kind == "capsule":
+        r, length = float(o["r"]), float(o["len"])
+        a, b = ring(r, r), ring(r, r + length)
+        for i in range(seg):
+            tris += [[a[i], a[(i + 1) % seg], b[i]], [b[i], a[(i + 1) % seg], b[(i + 1) % seg]]]
+        for cz, sign in ((r, -1), (r + length, 1)):
+            rows = 6
+            for j in range(rows):
+                t0, t1 = math.pi / 2 * j / rows, math.pi / 2 * (j + 1) / rows
+                c0 = ring(r * math.cos(t0), cz + sign * r * math.sin(t0))
+                c1 = ring(r * math.cos(t1), cz + sign * r * math.sin(t1))
+                for i in range(seg):
+                    tris += [[c0[i], c1[i], c0[(i + 1) % seg]], [c0[(i + 1) % seg], c1[i], c1[(i + 1) % seg]]]
+    elif kind == "ring":
+        r, thick = float(o["r"]), float(o["thick"]) / 2
+        span = math.radians(float(o.get("degrees", 360)))
+        n = 40
+        for i in range(n):
+            a0, a1 = span * i / n, span * (i + 1) / n
+            for j in range(8):
+                b0, b1 = 2 * math.pi * j / 8, 2 * math.pi * (j + 1) / 8
+                pt = lambda a, b: np.array([(r + thick * math.cos(b)) * math.cos(a), (r + thick * math.cos(b)) * math.sin(a), thick * math.sin(b)])
+                tris += [[pt(a0, b0), pt(a1, b0), pt(a0, b1)], [pt(a1, b0), pt(a1, b1), pt(a0, b1)]]
     elif kind == "disc":
         r = float(o["r"])
         a = ring(r, 0)
@@ -576,7 +602,7 @@ def model_tris(text, work):
             mats[w[1]] = (w[2], colour, float(opts.get("opacity", 1)) if w[2] == "glass" else 1.0)
         elif w[0] == "mesh":
             out += mesh_tris(s, work)
-        elif w[0] in ("sphere", "bowl", "cylinder", "cone", "disc", "box"):
+        elif w[0] in ("sphere", "bowl", "cylinder", "cone", "disc", "box", "capsule", "ring"):
             out += shape_tris(w, mats)
     return out
 
@@ -638,7 +664,7 @@ def textured_ball(tex, view, right, up, n):
     inside = r2 < 1
     sz = np.sqrt(np.clip(1 - r2, 0, 1))
     p = sx[..., None] * right + sy[..., None] * up + sz[..., None] * view
-    lon = np.arctan2(p[..., 1], p[..., 0])
+    lon = np.arctan2(p[..., 1], p[..., 0]) + math.pi / 2           # u = 0.25 on the model's -x side (measured)
     lat = np.arcsin(np.clip(p[..., 2], -1, 1))
     u = ((lon / (2 * math.pi) + 0.5) * tex.shape[1]).astype(int) % tex.shape[1]
     v = np.clip(((0.5 - lat / math.pi) * tex.shape[0]).astype(int), 0, tex.shape[0] - 1)
@@ -661,21 +687,21 @@ def previews():
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
         tris = lambda f: model_tris((MODELS / f).read_text(), work)
-        draw(tris("pumpkin_ball.txt"), PREVIEWS / "pumpkin.png", ball=None, azimuth=10, elevation=10, extent=62)
-        draw(tris("skull_ball.txt"), PREVIEWS / "skull.png", ball=None, azimuth=15, elevation=8, extent=60)
+        draw(tris("pumpkin_ball.txt"), PREVIEWS / "pumpkin.png", ball=None, azimuth=190, elevation=10, extent=62)
+        draw(tris("skull_ball.txt"), PREVIEWS / "skull.png", ball=None, azimuth=195, elevation=8, extent=60)
         draw(tris("ghost_ball.txt"), PREVIEWS / "ghost.png", ball="glass", azimuth=195)
         draw(tris("bat_ball.txt"), PREVIEWS / "bat.png", ball="glass", azimuth=190)
         draw(tris("ghost_skull_ball.txt"), PREVIEWS / "ghost_skull.png", ball="glass", azimuth=195)
         draw(tris("brew_ball.txt"), PREVIEWS / "brew.png", ball="glass", azimuth=20, elevation=22)
         draw(tris("graveyard_ball.txt"), PREVIEWS / "graveyard.png", ball="glass", azimuth=200, elevation=18)
-        draw(tris("spider_ball.txt"), PREVIEWS / "spider_web.png", ball=texture("spider_web.png"), azimuth=0, elevation=10, extent=56)
-        for name in ("mummy", "candy_corn"):
-            draw([], PREVIEWS / f"{name}.png", ball=texture(f"{name}.png"), azimuth=0, elevation=10, extent=52)
+        draw(tris("spider_ball.txt"), PREVIEWS / "spider_web.png", ball=texture("spider_web.png"), azimuth=180, elevation=10, extent=56)
+        draw([], PREVIEWS / "mummy.png", ball=texture("mummy.png"), azimuth=180, elevation=10, extent=52)
+        draw([], PREVIEWS / "candy_corn.png", ball=texture("candy_corn.png"), azimuth=0, elevation=10, extent=52)
         draw(tris("witch_hat.txt"), PREVIEWS / "witch_hat.png", azimuth=20, elevation=18, extent=30, centre_z=14)
-        draw(tris("jackolantern_hat.txt"), PREVIEWS / "jackolantern_hat.png", azimuth=185, elevation=12, extent=20, centre_z=12)
+        draw(tris("jackolantern_hat.txt"), PREVIEWS / "jackolantern_hat.png", azimuth=185, elevation=12, extent=27, centre_z=16)
         draw(tris("devil_horns.txt"), PREVIEWS / "devil_horns.png", azimuth=10, elevation=10, extent=22, centre_z=5)
-        draw(tris("bat_hat.txt"), PREVIEWS / "bat_hat.png", azimuth=185, elevation=10, extent=22, centre_z=16)
-        draw(tris("skull_candle_hat.txt"), PREVIEWS / "skull_candle_hat.png", azimuth=200, elevation=12, extent=20, centre_z=14)
+        draw(tris("bat_hat.txt"), PREVIEWS / "bat_hat.png", azimuth=185, elevation=10, extent=30, centre_z=22)
+        draw(tris("skull_candle_hat.txt"), PREVIEWS / "skull_candle_hat.png", azimuth=200, elevation=12, extent=26, centre_z=19)
     Image.open(PREVIEWS / "pumpkin.png").save(HERE / "icon.png")
 
 

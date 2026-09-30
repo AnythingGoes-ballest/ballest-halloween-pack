@@ -2,43 +2,43 @@
 # body and abdomen, glowing red eyes and eight legs in two bent segments. They roll with the ball.
 material spider plastic #14101a rough=0.35
 material eyes glow #ff2010 bright=8
-sphere spider r=5.5 at=53.5,0,0 scale=0.85,1,0.95
-sphere spider r=8.0 at=54.5,-11.0,0 scale=0.85,1.15,0.95
-sphere eyes r=1.1 at=56.7,-2.6,1.6
-sphere eyes r=1.1 at=56.7,2.6,1.6
-capsule spider r=0.75 len=8.0 at=56.0,-2.9,-3.4 rot=0,0,-220.0
-capsule spider r=0.60 len=8.0 at=53.1,-8.7,-10.3 rot=0,0,-220.0
-capsule spider r=0.75 len=8.0 at=56.0,-4.3,-1.4 rot=0,0,-252.0
-capsule spider r=0.60 len=8.0 at=53.1,-12.8,-4.2 rot=0,0,-252.0
-capsule spider r=0.75 len=8.0 at=56.0,-4.3,1.2 rot=0,0,74.0
-capsule spider r=0.60 len=8.0 at=53.1,-13.0,3.7 rot=0,0,74.0
-capsule spider r=0.75 len=8.0 at=56.0,-3.0,3.3 rot=0,0,42.0
-capsule spider r=0.60 len=8.0 at=53.1,-9.0,10.0 rot=0,0,42.0
-capsule spider r=0.75 len=8.0 at=56.0,2.9,-3.4 rot=0,0,-140.0
-capsule spider r=0.60 len=8.0 at=53.1,8.7,-10.3 rot=0,0,-140.0
-capsule spider r=0.75 len=8.0 at=56.0,4.3,-1.4 rot=0,0,-108.0
-capsule spider r=0.60 len=8.0 at=53.1,12.8,-4.2 rot=0,0,-108.0
-capsule spider r=0.75 len=8.0 at=56.0,4.3,1.2 rot=0,0,-74.0
-capsule spider r=0.60 len=8.0 at=53.1,13.0,3.7 rot=0,0,-74.0
-capsule spider r=0.75 len=8.0 at=56.0,3.0,3.3 rot=0,0,-42.0
-capsule spider r=0.60 len=8.0 at=53.1,9.0,10.0 rot=0,0,-42.0
-sphere spider r=3.6 at=-52.3,0,0 scale=0.85,1,0.95
-sphere spider r=5.2 at=-52.9,-7.2,0 scale=0.85,1.15,0.95
-sphere eyes r=0.7 at=-54.4,-1.7,1.0
-sphere eyes r=0.7 at=-54.4,1.7,1.0
-capsule spider r=0.49 len=5.2 at=-53.9,-1.9,-2.2 rot=0,0,-220.0
-capsule spider r=0.39 len=5.2 at=-52.0,-5.6,-6.7 rot=0,0,-220.0
-capsule spider r=0.49 len=5.2 at=-53.9,-2.8,-0.9 rot=0,0,-252.0
-capsule spider r=0.39 len=5.2 at=-52.0,-8.3,-2.7 rot=0,0,-252.0
-capsule spider r=0.49 len=5.2 at=-53.9,-2.8,0.8 rot=0,0,74.0
-capsule spider r=0.39 len=5.2 at=-52.0,-8.4,2.4 rot=0,0,74.0
-capsule spider r=0.49 len=5.2 at=-53.9,-2.0,2.2 rot=0,0,42.0
-capsule spider r=0.39 len=5.2 at=-52.0,-5.9,6.5 rot=0,0,42.0
-capsule spider r=0.49 len=5.2 at=-53.9,1.9,-2.2 rot=0,0,-140.0
-capsule spider r=0.39 len=5.2 at=-52.0,5.6,-6.7 rot=0,0,-140.0
-capsule spider r=0.49 len=5.2 at=-53.9,2.8,-0.9 rot=0,0,-108.0
-capsule spider r=0.39 len=5.2 at=-52.0,8.3,-2.7 rot=0,0,-108.0
-capsule spider r=0.49 len=5.2 at=-53.9,2.8,0.8 rot=0,0,-74.0
-capsule spider r=0.39 len=5.2 at=-52.0,8.4,2.4 rot=0,0,-74.0
-capsule spider r=0.49 len=5.2 at=-53.9,2.0,2.2 rot=0,0,-42.0
-capsule spider r=0.39 len=5.2 at=-52.0,5.9,6.5 rot=0,0,-42.0
+sphere spider r=5.5 at=-53.5,0,0 scale=0.85,1,0.95
+sphere spider r=8.0 at=-54.5,-11.0,0 scale=0.85,1.15,0.95
+sphere eyes r=1.1 at=-56.7,-2.6,1.6
+sphere eyes r=1.1 at=-56.7,2.6,1.6
+capsule spider r=1.00 len=9.0 at=-56.0,-2.9,-3.4 rot=0,0,220.0
+capsule spider r=0.80 len=9.0 at=-53.1,-9.3,-11.1 rot=0,0,220.0
+capsule spider r=1.00 len=9.0 at=-56.0,-4.3,-1.4 rot=0,0,252.0
+capsule spider r=0.80 len=9.0 at=-53.1,-13.8,-4.5 rot=0,0,252.0
+capsule spider r=1.00 len=9.0 at=-56.0,-4.3,1.2 rot=0,0,-74.0
+capsule spider r=0.80 len=9.0 at=-53.1,-13.9,4.0 rot=0,0,-74.0
+capsule spider r=1.00 len=9.0 at=-56.0,-3.0,3.3 rot=0,0,-42.0
+capsule spider r=0.80 len=9.0 at=-53.1,-9.7,10.8 rot=0,0,-42.0
+capsule spider r=1.00 len=9.0 at=-56.0,2.9,-3.4 rot=0,0,140.0
+capsule spider r=0.80 len=9.0 at=-53.1,9.3,-11.1 rot=0,0,140.0
+capsule spider r=1.00 len=9.0 at=-56.0,4.3,-1.4 rot=0,0,108.0
+capsule spider r=0.80 len=9.0 at=-53.1,13.8,-4.5 rot=0,0,108.0
+capsule spider r=1.00 len=9.0 at=-56.0,4.3,1.2 rot=0,0,74.0
+capsule spider r=0.80 len=9.0 at=-53.1,13.9,4.0 rot=0,0,74.0
+capsule spider r=1.00 len=9.0 at=-56.0,3.0,3.3 rot=0,0,42.0
+capsule spider r=0.80 len=9.0 at=-53.1,9.7,10.8 rot=0,0,42.0
+sphere spider r=3.6 at=52.3,0,0 scale=0.85,1,0.95
+sphere spider r=5.2 at=52.9,-7.2,0 scale=0.85,1.15,0.95
+sphere eyes r=0.7 at=54.4,-1.7,1.0
+sphere eyes r=0.7 at=54.4,1.7,1.0
+capsule spider r=0.65 len=5.9 at=53.9,-1.9,-2.2 rot=0,0,220.0
+capsule spider r=0.52 len=5.9 at=52.0,-6.1,-7.2 rot=0,0,220.0
+capsule spider r=0.65 len=5.9 at=53.9,-2.8,-0.9 rot=0,0,252.0
+capsule spider r=0.52 len=5.9 at=52.0,-9.0,-2.9 rot=0,0,252.0
+capsule spider r=0.65 len=5.9 at=53.9,-2.8,0.8 rot=0,0,-74.0
+capsule spider r=0.52 len=5.9 at=52.0,-9.1,2.6 rot=0,0,-74.0
+capsule spider r=0.65 len=5.9 at=53.9,-2.0,2.2 rot=0,0,-42.0
+capsule spider r=0.52 len=5.9 at=52.0,-6.3,7.0 rot=0,0,-42.0
+capsule spider r=0.65 len=5.9 at=53.9,1.9,-2.2 rot=0,0,140.0
+capsule spider r=0.52 len=5.9 at=52.0,6.1,-7.2 rot=0,0,140.0
+capsule spider r=0.65 len=5.9 at=53.9,2.8,-0.9 rot=0,0,108.0
+capsule spider r=0.52 len=5.9 at=52.0,9.0,-2.9 rot=0,0,108.0
+capsule spider r=0.65 len=5.9 at=53.9,2.8,0.8 rot=0,0,74.0
+capsule spider r=0.52 len=5.9 at=52.0,9.1,2.6 rot=0,0,74.0
+capsule spider r=0.65 len=5.9 at=53.9,2.0,2.2 rot=0,0,42.0
+capsule spider r=0.52 len=5.9 at=52.0,6.3,7.0 rot=0,0,42.0

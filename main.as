@@ -17,7 +17,7 @@ void Main()
     AddBall("halloween-pack.ghost-skull", "Ghost Skull", "", p + "ghost_skull.png", m + "ghost_skull_ball.txt");
     AddBall("halloween-pack.witchs-brew", "Witch's Brew", "", p + "brew.png", m + "brew_ball.txt");
     AddBall("halloween-pack.graveyard", "Graveyard Globe", "", p + "graveyard.png", m + "graveyard_ball.txt");
-    AddBall("halloween-pack.spider-web", "Spider Web", t + "spider_web.png", p + "spider_web.png", "");
+    AddBall("halloween-pack.spider-web", "Spider Web", t + "spider_web.png", p + "spider_web.png", m + "spider_ball.txt");
     AddBall("halloween-pack.mummy", "Mummy", t + "mummy.png", p + "mummy.png", "");
     AddBall("halloween-pack.candy-corn", "Candy Corn", t + "candy_corn.png", p + "candy_corn.png", "");
     // hats: no mesh of the game's, size 1, a tile picture, a model
