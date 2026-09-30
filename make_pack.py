@@ -167,7 +167,7 @@ def plain(name, rgb):
 
 
 # --- models ------------------------------------------------------------------------------------------------------------
-def candle_flames(size):
+def candle_flames(size, turned=False):
     """Glowing flames on the skull candle's three wicks. The wick tops were found in the model (the brown faces at the
     top of each candle, read through the host's model reader), in the file's own units; placed as the hat places the
     model: longest side (118.73) scaled to `size`, bottom of its bounds centred on the hat slot."""
@@ -177,6 +177,8 @@ def candle_flames(size):
     lines = []
     for wick in ([-23.3, -10.1, 124.1], [-2.9, 7.9, 109.5], [-1.1, -14.1, 104.0]):
         p = (np.array(wick) - centre) * k
+        if turned:                                  # turned round (yaw 180) about the centre of its bounds
+            p[0], p[1] = -p[0], -p[1]
         lines.append(f"sphere flame r=0.9 at={p[0]:.1f},{p[1]:.1f},{p[2] + 1.0:.1f} scale=1,1,1.7")
     return lines
 
@@ -273,13 +275,14 @@ cone horn r=4.2 top=3 h=8 at=2,9,-2 rot=0,0,20
 cone horn r=3 top=1.6 h=7 at=2,11.7,5.5 rot=0,0,38
 cone horn r=1.6 top=0.2 h=6 at=2,15.9,11 rot=0,0,60
 """,
-    "bat_hat.txt": """# A bat (Quaternius, CC0) hovering over the ball, flapping.
-mesh bat.glb size=34 at=0,0,6 anim=Flying rate=1
+    "bat_hat.txt": """# A bat (Quaternius, CC0) hovering over the ball, flapping, turned round to look back at the camera behind the ball.
+mesh bat.glb size=34 at=0,0,6 rot=0,180,0 anim=Flying rate=1
 """,
-    "skull_candle_hat.txt": """# A skull with three lit candles on it (KayKit, Kay Lousberg, CC0), with glowing flames on the wicks.
+    "skull_candle_hat.txt": """# A skull with three lit candles on it (KayKit, Kay Lousberg, CC0), with glowing flames on the wicks, turned round
+# to look back at the camera behind the ball.
 material flame glow #ffb840 bright=12
-mesh skull_candle.glb size=30
-""" + "\n".join(candle_flames(30)) + "\n",
+mesh skull_candle.glb size=30 rot=0,180,0
+""" + "\n".join(candle_flames(30, turned=True)) + "\n",
 }
 
 
@@ -518,8 +521,8 @@ def previews():
         draw(tris("witch_hat.txt"), PREVIEWS / "witch_hat.png", azimuth=20, elevation=18, extent=30, centre_z=14)
         draw(tris("jackolantern_hat.txt"), PREVIEWS / "jackolantern_hat.png", azimuth=185, elevation=12, extent=20, centre_z=12)
         draw(tris("devil_horns.txt"), PREVIEWS / "devil_horns.png", azimuth=10, elevation=10, extent=22, centre_z=5)
-        draw(tris("bat_hat.txt"), PREVIEWS / "bat_hat.png", azimuth=5, elevation=10, extent=22, centre_z=16)
-        draw(tris("skull_candle_hat.txt"), PREVIEWS / "skull_candle_hat.png", azimuth=20, elevation=12, extent=20, centre_z=14)
+        draw(tris("bat_hat.txt"), PREVIEWS / "bat_hat.png", azimuth=185, elevation=10, extent=22, centre_z=16)
+        draw(tris("skull_candle_hat.txt"), PREVIEWS / "skull_candle_hat.png", azimuth=200, elevation=12, extent=20, centre_z=14)
     Image.open(PREVIEWS / "pumpkin.png").save(HERE / "icon.png")
 
 

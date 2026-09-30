@@ -1,2 +1,2 @@
-# A bat (Quaternius, CC0) hovering over the ball, flapping.
-mesh bat.glb size=34 at=0,0,6 anim=Flying rate=1
+# A bat (Quaternius, CC0) hovering over the ball, flapping, turned round to look back at the camera behind the ball.
+mesh bat.glb size=34 at=0,0,6 rot=0,180,0 anim=Flying rate=1
