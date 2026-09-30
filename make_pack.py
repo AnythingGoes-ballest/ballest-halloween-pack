@@ -183,11 +183,13 @@ def candle_flames(size):
 
 MODEL_TEXT = {
     "pumpkin_ball.txt": """# The ball as a jack-o'-lantern: KayKit's (Kay Lousberg, CC0), recoloured orange by make_pack.py, stretched a little
-# upright so its body is as round as the ball (100 cm across) and rolling with it. The ball under it is plain orange.
-mesh jackolantern_orange.glb size=100 scale=1.07,1,1.3 at=0,0,-49
+# upright so its body is as round as the ball and a little bigger (106 cm across), rolling with it. The ball itself is
+# clear glass, so where it shows through the pumpkin's grooves the pumpkin is seen through it.
+mesh jackolantern_orange.glb size=106 scale=1.07,1,1.3 at=0,0,-51
 """,
-    "skull_ball.txt": """# The ball as a skull: KayKit's (Kay Lousberg, CC0), as big as the ball and rolling with it. The ball under it is bone.
-mesh skull.glb size=102 at=0,0,-50
+    "skull_ball.txt": """# The ball as a skull: KayKit's (Kay Lousberg, CC0), a little bigger than the ball and rolling with it. The ball itself
+# is clear glass, so where it shows through, the skull is seen through it.
+mesh skull.glb size=106 at=0,0,-51
 """,
     "ghost_ball.txt": """# A ghost (Quaternius, CC0) floating inside a clear ball with a misty purple lower half. It stays upright, faces
 # where the ball is going and flies faster as the ball speeds up; still, it hovers.
@@ -503,8 +505,8 @@ def previews():
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
         tris = lambda f: model_tris((MODELS / f).read_text(), work)
-        draw(tris("pumpkin_ball.txt"), PREVIEWS / "pumpkin.png", ball=texture("orange.png"), azimuth=10, elevation=10, extent=62)
-        draw(tris("skull_ball.txt"), PREVIEWS / "skull.png", ball=texture("bone.png"), azimuth=15, elevation=8, extent=60)
+        draw(tris("pumpkin_ball.txt"), PREVIEWS / "pumpkin.png", ball=None, azimuth=10, elevation=10, extent=62)
+        draw(tris("skull_ball.txt"), PREVIEWS / "skull.png", ball=None, azimuth=15, elevation=8, extent=60)
         draw(tris("ghost_ball.txt"), PREVIEWS / "ghost.png", ball="glass", azimuth=15)
         draw(tris("bat_ball.txt"), PREVIEWS / "bat.png", ball="glass", azimuth=10)
         draw(tris("ghost_skull_ball.txt"), PREVIEWS / "ghost_skull.png", ball="glass", azimuth=15)
@@ -527,7 +529,5 @@ if __name__ == "__main__":
     spider_web()
     mummy()
     candy_corn()
-    plain("orange.png", [0.93, 0.42, 0.08])
-    plain("bone.png", [0.9, 0.86, 0.78])
     write_models()
     previews()

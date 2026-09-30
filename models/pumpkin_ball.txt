@@ -1,3 +1,4 @@
 # The ball as a jack-o'-lantern: KayKit's (Kay Lousberg, CC0), recoloured orange by make_pack.py, stretched a little
-# upright so its body is as round as the ball (100 cm across) and rolling with it. The ball under it is plain orange.
-mesh jackolantern_orange.glb size=100 scale=1.07,1,1.3 at=0,0,-49
+# upright so its body is as round as the ball and a little bigger (106 cm across), rolling with it. The ball itself is
+# clear glass, so where it shows through the pumpkin's grooves the pumpkin is seen through it.
+mesh jackolantern_orange.glb size=106 scale=1.07,1,1.3 at=0,0,-51

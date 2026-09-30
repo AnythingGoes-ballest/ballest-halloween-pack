@@ -10,8 +10,8 @@ void Main()
     string f = Plugins::Folder();
     string p = f + "previews/", m = f + "models/", t = f + "textures/";
     // balls: a texture (or "" for clear glass), a tile picture, a model ("" for none)
-    AddBall("halloween-pack.pumpkin", "Pumpkin", t + "orange.png", p + "pumpkin.png", m + "pumpkin_ball.txt");
-    AddBall("halloween-pack.skull", "Skull", t + "bone.png", p + "skull.png", m + "skull_ball.txt");
+    AddBall("halloween-pack.pumpkin", "Pumpkin", "", p + "pumpkin.png", m + "pumpkin_ball.txt");
+    AddBall("halloween-pack.skull", "Skull", "", p + "skull.png", m + "skull_ball.txt");
     AddBall("halloween-pack.ghost", "Ghost", "", p + "ghost.png", m + "ghost_ball.txt");
     AddBall("halloween-pack.bat", "Bat", "", p + "bat.png", m + "bat_ball.txt");
     AddBall("halloween-pack.ghost-skull", "Ghost Skull", "", p + "ghost_skull.png", m + "ghost_skull_ball.txt");
